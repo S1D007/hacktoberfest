@@ -1,42 +1,33 @@
-/* 
-            This is the Entry poin File of Express And Node Server
-*/
-// Imports 
-const express = require("express")
-const Router = require(__dirname+"/Router/routes.js") 
-const Database = require("./Database/Database")
-const app = express()
-const fs = require('fs')
-const path = require("path")
-const cors = require("cors")
-// Using Middlewares
-const https = require("https")
-app.use(cors())
-app.use(Router)
+const express = require("express");
+const path = require("path");
+const cors = require("cors");
+
+const connectToDatabase = require("./config/db");
+const Router = require("./Router/routes.js");
+
+connectToDatabase();
+
+const app = express();
+
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({extended:true}))
+app.use(express.urlencoded({ extended: true }));
 
-const Port = 1111
+app.use(Router);
+const port = 1111 || process.env.PORT;
 
-// at "localhost:port'/' "
-app.get("/",(req,res)=>{
+/**
+ * @route   GET /
+ */
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "/public/index.html"));
+});
 
-    res.sendFile(path.join(__dirname, '/public/index.html'))
-})
+app.listen(port, (error) => {
+  if (error)
+    return console.log(`An occured due to the following Reasons \n
+         ${error}
+     `);
 
-//const options = {
-  //  key: fs.readFileSync("server.key"),
-    //cert: fs.readFileSync("server.cert"),
-  //};
- //Init of app
-app.listen(Port,(e)=>{
-    console.log(`App is running on Port ${Port} Link: http://localhost:${Port}/`)
-
-     if (e) console.log(`An occured due to the following Reasons \n
-         ${e}
-     `)
- })
-//https.createServer(options, app)
-//.listen(Port, function (req, res) {
-//  console.log("Server started at port 3000");
-//});
+  console.log(`App is running on Port ${port} Link: http://localhost:${port}/`);
+});
