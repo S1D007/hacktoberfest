@@ -1,5 +1,7 @@
 const express = require("express");
 const Question = require("../models/questionModel");
+const { questionSchema } = require("../validators/questionValidators");
+const validate = require("../middlewares/validateMiddleware");
 const {
   addQuestion,
   getQuestions,
@@ -9,7 +11,7 @@ const {
 
 const route = express.Router();
 
-route.post("/add-questions", addQuestion);
+route.post("/add-questions", validate(questionSchema), addQuestion);
 route.get("/get-questions", getQuestions);
 route.get("/get-single-question", getSingleQuestion);
 
