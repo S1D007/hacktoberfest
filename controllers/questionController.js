@@ -1,15 +1,7 @@
-const express = require("express");
 const Question = require("../models/questionModel");
 const UserInformation = require("../models/userInfoModel");
-const route = express.Router();
-const axios = require("axios");
-const cors = require("cors");
-route.use(express.json());
-route.use(cors());
-// Routes
 
-/* Add Question Route */
-route.post("/add-questions", async (req, res) => {
+module.exports.addQuestion = async (req, res) => {
   const { category, level, question, options, correctAnswer, price, prize } =
     req.body;
   /* Checking whether the following conditions are false
@@ -61,9 +53,9 @@ route.post("/add-questions", async (req, res) => {
     .send(
       "Succesfully Questions has been inserted go to \n '/getQuestions' to get the desired questions "
     );
-});
+};
 
-route.get("/get-questions", async (req, res) => {
+module.exports.getQuestions = async (req, res) => {
   const { limit } = req.query;
   const data = await Question.find().limit(limit);
   const length = data.length;
@@ -71,56 +63,18 @@ route.get("/get-questions", async (req, res) => {
     length,
     data,
   });
-});
+};
 
-route.get("/get-single-question", async (req, res) => {
+module.exports.getSingleQuestion = async (req, res) => {
   const { id } = req.query;
   const data = await Question.find({
     _id: id,
   });
 
   res.send(data);
-});
-
-const getRandomQuestions = async () => {
-  const url = "https://opentdb.com/api.php?amount=1000&type=multiple";
-  const data = await axios.get(url);
-  const res = data.data.results;
-  res.map(
-    async ({
-      category,
-      difficulty,
-      correct_answer,
-      incorrect_answers,
-      question,
-    }) => {
-      const doc = new Question({
-        category: category,
-        level: difficulty,
-        question: question,
-        options: incorrect_answers,
-        correctAnswer: correct_answer,
-        price: Math.round(Math.random() * 10),
-        prize: Math.round(Math.random() * 15 + 10),
-      });
-      await doc.save();
-    }
-  );
 };
-setInterval(() => {
-  getRandomQuestions();
-}, 3600000);
 
-// const delque = async() =>{
-//     await Question.deleteMany({
-//         __v:0
-//     })
-// }
-// setInterval(()=>{
-//     delque()
-// },100)
-
-route.get("/get-question-with-params", async (req, res) => {
+module.exports.getQuestionsWithParam = async (req, res) => {
   const { category, level, limit, email } = req.query;
 
   let user = await UserInformation.findOne({ email });
@@ -137,5 +91,4 @@ route.get("/get-question-with-params", async (req, res) => {
   user.questionsID.push(...ids);
 
   user.save();
-});
-module.exports = route;
+};

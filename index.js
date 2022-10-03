@@ -3,7 +3,7 @@ const path = require("path");
 const cors = require("cors");
 
 const connectToDatabase = require("./config/db");
-const Router = require("./Router/routes.js");
+const questionRoutes = require("./routes/questionRoutes.js");
 
 connectToDatabase();
 
@@ -13,8 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(Router);
-const port = 1111 || process.env.PORT;
+app.use(questionRoutes);
 
 /**
  * @route   GET /
@@ -22,6 +21,8 @@ const port = 1111 || process.env.PORT;
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/index.html"));
 });
+
+const port = 1111 || process.env.PORT;
 
 app.listen(port, (error) => {
   if (error)
