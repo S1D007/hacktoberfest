@@ -3,7 +3,9 @@ const Question = require("../Database/Models/index")
 const UserInformation = require("../Database/Models/index2")
 const route = express.Router()
 const axios = require("axios")
+const cors = require('cors')
 route.use(express.json());
+route.use(cors())
 // Routes 
 
 /* Add Question Route */
@@ -96,42 +98,23 @@ setInterval(() => {
 // },100)
 
 route.get("/get-question-with-params", async (req, res) => {
-    const { category, level, limit, email } = req.query
-    const doc = await Question.find({
-        category,
-        level
-    }).limit(limit)
-    const id = []
-    doc.map(({ _id }) => id.push(_id.toString()))
-    const getUserInfo = await UserInformation.findOne({
-        email
-    })
-    if(getUserInfo?.email === email){
-        const currID = getUserInfo.questionsID.flat()
-        const docs = await Question.find({ _id: { $nin: currID } , category, level}).limit(limit)
-        const newDocs = docs.sort(() => Math.random() - 0.5)
-        res.send(newDocs)
-        const getUser = await UserInformation.findOne({
-            email
-        })
-        const ids = []
-        newDocs.map(({ _id }) => ids.push(_id.toString()))
-        const newIDS = [getUser.questionsID.flat(),ids].flat()
-        await UserInformation.updateOne({email},{
-            $set:{
-                questionsID:newIDS
-            }
-        })
-    } else {
-        const docAdd = new UserInformation({
-            questionsID: id,
-            email
-        })
-        await docAdd.save()
-        res.send(doc)
-    }
-    // res.send(docs)
-})
+    const { category, level, limit, email } = req.query;
+  
+    let user = await UserInformation.findOne({ email });
+    const questions = await Question.find({
+      category,
+      level,
+      _id: { $nin: user?.questionsID || [] },
+    }).limit(limit);
+    res.send(questions);
+  
+    if (!user) user = new UserInformation({ questionsId: [], email });
+  
+    const ids = questions.map((question) => question._id.toString());
+    user.questionsID.push(...ids);
+  
+    user.save();
+  });
 module.exports = route
 
 
