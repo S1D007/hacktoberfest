@@ -42,6 +42,15 @@ module.exports.getSingleQuestion = async (req, res) => {
   res.send(data);
 };
 
+module.exports.practice = async(req,res)=>{
+  const {category,limit} = req.query
+  const doc = await Question.find({
+      category,
+      level:"easy"
+  }).limit(limit)
+  res.send(doc)
+}
+
 module.exports.getQuestionsWithParam = async (req, res) => {
   const { category, level, limit, email } = req.query;
 
