@@ -56,36 +56,42 @@ module.exports.setCoinHistory = async (req, res) => {
   const { coins, lastBalance, email } = req.query;
   let user = await UserCoinHistory.findOne({ email });
   res.send(user)
-  const prevData = user.data.flat()
-  const qData = {
-    coins,
-    lastBalance
-  }
-  const currData = [prevData,qData].flat()
-  await UserCoinHistory.updateOne({email},{
-    $set:{
-      data:currData
-    }
-  })
+
   if (!user) {
     const doc = new UserCoinHistory({
       email,
-      data:[]
+      data:[{
+        coins,
+        lastBalance
+      }]
     });
     await doc.save()
     res.send(doc)
+  }else{
+    const prevData = user.data.flat()
+    const qData = {
+      coins,
+      lastBalance
+    }
+    const currData = [prevData,qData].flat()
+    await UserCoinHistory.updateOne({email},{
+      $set:{
+        data:currData
+      }
+    })
+  
   }
 }
-// module.exports.getCoinHistory = async (req, res) => {
-//   const { email } = req.query;
-//   const doc = await UserCoinHistory.findOne({email})
-//   if (!doc) {
-//   res.send({
+module.exports.getCoinHistory = async (req, res) => {
+  const { email } = req.query;
+  const doc = await UserCoinHistory.findOne({email})
+  if(doc){
+    res.send(doc)
+  }else{
+    res.send([])
+  }
+}
 
-//   })
-
-// }
-// }
 
 module.exports.getQuestionsWithParam = async (req, res) => {
   const { category, level, limit, email } = req.query;
