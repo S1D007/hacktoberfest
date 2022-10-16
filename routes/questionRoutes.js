@@ -7,7 +7,8 @@ const {
   getQuestions,
   getSingleQuestion,
   getQuestionsWithParam,
-  practice
+  practice,
+  setCoinHistory,
 } = require("../controllers/questionController");
 
 const route = express.Router();
@@ -16,7 +17,8 @@ route.post("/add-questions", validate(questionSchema), addQuestion);
 route.get("/get-questions", getQuestions);
 route.get("/get-single-question", getSingleQuestion);
 route.get("/practice",practice)
-
+route.get("/coin-history",setCoinHistory)
+// route.get("/coin-history",getCoinHistory)
 const getRandomQuestions = async () => {
   const url = "https://opentdb.com/api.php?amount=100&type=multiple";
   const data = await axios.get(url);
