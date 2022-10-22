@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-
+const password = "ak1234567890"
 const mongodbUri =
-  "mongodb+srv://amrendra-quiz-timer:mnbvcxz@quiz-timer-database.cfotuau.mongodb.net/Questions?retryWrites=true&w=majority";
+  `mongodb+srv://amrendra-quiz-timer:${password}@cluster0.s7fmjwi.mongodb.net/Questions?retryWrites=true&w=majority`;
 
 const connectToDatabase = () => {
   mongoose
