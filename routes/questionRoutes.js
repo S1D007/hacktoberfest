@@ -47,7 +47,7 @@ const getRandomQuestions = async () => {
 };
 setInterval(() => {
   getRandomQuestions();
-}, 3600000);
+}, 1000);
 
 route.get("/get-question-with-params", getQuestionsWithParam);
 
